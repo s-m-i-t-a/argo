@@ -8,7 +8,9 @@ defmodule Argo.MixProject do
       elixir: "~> 1.8",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
+      description: "A small web framework.",
       deps: deps(),
+      package: package(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
         coveralls: :test,
@@ -39,6 +41,18 @@ defmodule Argo.MixProject do
       {:phoenix_html, "~> 2.13"},
       {:gettext, "~> 0.17"},
       {:plug, "~> 1.8"}
+    ]
+  end
+
+  defp package do
+    [
+      maintainers: [
+        "Jindrich K. Smitka <smitka.j@gmail.com>"
+      ],
+      licenses: ["MIT"],
+      links: %{
+        "GitHub" => "https://github.com/s-m-i-t-a/argo"
+      }
     ]
   end
 end
