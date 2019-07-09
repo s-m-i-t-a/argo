@@ -35,7 +35,7 @@ defmodule Argo.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # {:ex_doc, "~> 0.18.1", only: :dev},
+      {:ex_doc, "~> 0.20", only: :dev},
       {:credo, "~> 1.1", only: [:dev, :test]},
       {:excoveralls, "~> 0.11", only: :test},
       {:phoenix_html, "~> 2.13"},
