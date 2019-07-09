@@ -3,11 +3,13 @@ defmodule Argo.Router do
 
   alias Plug.Conn
 
-  defmacro __using__(_options) do
+  defmacro __using__(opts) do
     quote do
       use Plug.Router
 
       alias Argo.Router
+
+      @template_root Path.relative_to_cwd(unquote(opts)[:template_root])
 
       plug(:match)
       plug(:dispatch)
@@ -17,7 +19,7 @@ defmodule Argo.Router do
   defmacro get(path, module, function) do
     quote do
       get unquote(path) do
-        Argo.Router.process(var!(conn), unquote(module), unquote(function))
+        Argo.Router.process(var!(conn), @template_root, unquote(module), unquote(function))
       end
     end
   end
@@ -25,7 +27,7 @@ defmodule Argo.Router do
   defmacro post(path, module, function) do
     quote do
       post unquote(path) do
-        Argo.Router.process(var!(conn), unquote(module), unquote(function))
+        Argo.Router.process(var!(conn), @template_root, unquote(module), unquote(function))
       end
     end
   end
@@ -33,7 +35,7 @@ defmodule Argo.Router do
   defmacro put(path, module, function) do
     quote do
       put unquote(path) do
-        Argo.Router.process(var!(conn), unquote(module), unquote(function))
+        Argo.Router.process(var!(conn), @template_root, unquote(module), unquote(function))
       end
     end
   end
@@ -41,7 +43,7 @@ defmodule Argo.Router do
   defmacro patch(path, module, function) do
     quote do
       patch unquote(path) do
-        Argo.Router.process(var!(conn), unquote(module), unquote(function))
+        Argo.Router.process(var!(conn), @template_root, unquote(module), unquote(function))
       end
     end
   end
@@ -49,7 +51,7 @@ defmodule Argo.Router do
   defmacro delete(path, module, function) do
     quote do
       delete unquote(path) do
-        Argo.Router.process(var!(conn), unquote(module), unquote(function))
+        Argo.Router.process(var!(conn), @template_root, unquote(module), unquote(function))
       end
     end
   end
@@ -57,15 +59,15 @@ defmodule Argo.Router do
   defmacro options(path, module, function) do
     quote do
       options unquote(path) do
-        Argo.Router.process(var!(conn), unquote(module), unquote(function))
+        Argo.Router.process(var!(conn), @template_root, unquote(module), unquote(function))
       end
     end
   end
 
-  def process(conn, module, function) do
+  def process(conn, template_dir, module, function) do
     conn
     |> Controller.call(module, function)
-    |> View.render(Path.expand("../templates", __DIR__))
+    |> View.render(template_dir)
     |> Conn.send_resp()
   end
 end
