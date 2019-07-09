@@ -34,11 +34,11 @@ defmodule Argo.MixProject do
   defp deps do
     [
       # {:ex_doc, "~> 0.18.1", only: :dev},
-      {:credo, "~> 0.9", only: [:dev, :test]},
-      {:excoveralls, "~> 0.9", only: :test},
-      {:phoenix_html, "~> 2.6"},
-      {:gettext, "~> 0.11"},
-      {:plug, "~> 1.7"}
+      {:credo, "~> 1.1", only: [:dev, :test]},
+      {:excoveralls, "~> 0.11", only: :test},
+      {:phoenix_html, "~> 2.13"},
+      {:gettext, "~> 0.17"},
+      {:plug, "~> 1.8"}
     ]
   end
 end
