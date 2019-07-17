@@ -6,10 +6,15 @@ defmodule Argo.View do
   alias Plug.Conn
 
   defmacro __using__(opts) do
-    templates = load_templates(Path.relative_to_cwd(opts[:template_root]))
+    template_root = Path.relative_to_cwd(opts[:template_root])
+    templates = load_templates(template_root)
 
-    quote do
+    quote bind_quoted: [template_root: template_root], unquote: true do
       @templates unquote(Macro.escape(templates))
+
+      for {file, _} <- @templates do
+        @external_resource Path.join(template_root, file <> ".eex")
+      end
 
       def render_template(template, assigns) do
         @templates
