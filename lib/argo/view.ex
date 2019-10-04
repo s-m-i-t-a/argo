@@ -29,7 +29,7 @@ defmodule Argo.View do
 
     conn
     |> Conn.put_resp_header("content-type", "text/html")
-    |> Conn.resp(200, content)
+    |> Conn.resp(conn.status || 200, content)
   end
 
   defp load_templates(path) do
