@@ -8,6 +8,25 @@ defmodule ControllerTest do
 
   alias Plug.Conn
 
+  defmodule TestController do
+    use Argo.Controller
+
+    def index(%Conn{} = conn, params) do
+      send(self(), {:index_called, conn, params})
+      conn
+    end
+  end
+
+  describe "Call" do
+    test "should call right function" do
+      c = conn(:get, "/", %{foo: :bar})
+
+      Controller.call(c, TestController, :index)
+
+      assert_received {:index_called, ^c, %{"foo" => :bar}}
+    end
+  end
+
   describe "Redirect" do
     test "should use to: for local redirect" do
       conn = Controller.redirect(conn(:get, "/"), to: "/foobar")
@@ -52,6 +71,18 @@ defmodule ControllerTest do
       assert conn.status == 302
       conn = conn(:get, "/") |> put_status(301) |> Controller.redirect(to: "/")
       assert conn.status == 301
+    end
+  end
+
+  describe "Render" do
+    test "should set private value in conn with template and assigns" do
+      %Conn{private: %{pages_render: {template, assigns}}} =
+        :get
+        |> conn("/")
+        |> Controller.render("test.html", foo: :bar)
+
+      assert template == "test.html"
+      assert Keyword.get(assigns, :foo) == :bar
     end
   end
 end
