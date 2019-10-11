@@ -3,7 +3,7 @@ defmodule ViewTest do
   use ExUnit.Case
   doctest Argo.View
 
-  alias Argo.View
+  # alias Argo.View
 
   defmodule TestView do
     use Argo.View, template_root: "test/templates"
