@@ -12,11 +12,12 @@ defmodule Argo.Controller do
     end
   end
 
-  def call(%Conn{} = conn, module, function) do
+  def call(%Conn{} = conn, module, function) when is_atom(module) and is_atom(function) do
     apply(module, function, [conn, conn.params])
   end
 
-  def render(%Conn{} = conn, template, assigns \\ []) do
+  def render(%Conn{} = conn, template, assigns \\ [])
+      when is_binary(template) and is_list(assigns) do
     Conn.put_private(conn, :pages_render, {template, assigns})
   end
 
