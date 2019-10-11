@@ -1,9 +1,11 @@
 defmodule ViewTest do
   @moduledoc false
   use ExUnit.Case
+  use Plug.Test
   doctest Argo.View
 
-  # alias Argo.View
+  alias Plug.Conn
+  alias Argo.View
 
   defmodule TestView do
     use Argo.View, template_root: "test/templates"
@@ -13,5 +15,31 @@ defmodule ViewTest do
     rv = TestView.render_template("one/test.html", [])
 
     assert rv =~ ~r/<h1>One<\/h1>/
+  end
+
+  test "should return nil if template not found" do
+    assert is_nil(TestView.render_template("non_exists.html", []))
+  end
+
+  test "should return 500 status code if template not found" do
+    rv =
+      :get
+      |> conn("/")
+      |> Conn.put_private(:pages_render, {"non_exists.html", []})
+      |> View.render(TestView)
+
+    assert rv.status == 500
+    assert rv.resp_body =~ ~r/Internal server error/
+  end
+
+  test "should return rendered template" do
+    rv =
+      :get
+      |> conn("/")
+      |> Conn.put_private(:pages_render, {"two/main.html", []})
+      |> View.render(TestView)
+
+    assert rv.status == 200
+    assert rv.resp_body =~ ~r/<h1>Two<\/h1>/
   end
 end

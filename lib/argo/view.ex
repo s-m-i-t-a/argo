@@ -3,7 +3,10 @@ defmodule Argo.View do
   A view helper module.
   """
 
+  alias ExMaybe, as: Maybe
   alias Plug.Conn
+
+  require Logger
 
   defmacro __using__(opts) do
     template_root = Path.relative_to_cwd(opts[:template_root])
@@ -16,18 +19,39 @@ defmodule Argo.View do
         @external_resource Path.join(template_root, file <> ".eex")
       end
 
-      def render_template(template, assigns) do
+      def render_template(template, assigns)
+          when is_binary(template) and is_list(assigns) do
         @templates
         |> Map.get(template, nil)
-        |> EEx.eval_string(assigns)
+        |> Maybe.map(&EEx.eval_string(&1, assigns))
       end
     end
   end
 
   def render(%Conn{private: %{pages_render: {template, assigns}}} = conn, view_module)
       when is_binary(template) and is_list(assigns) and is_atom(view_module) do
-    content = apply(view_module, :render_template, [template, Keyword.put(assigns, :conn, conn)])
+    view_module
+    |> apply(:render_template, [template, Keyword.put(assigns, :conn, conn)])
+    |> log_error(template)
+    |> response(conn)
+  end
 
+  defp log_error(nil, template) do
+    Logger.error(fn -> "Template '#{template}' not found" end)
+    nil
+  end
+
+  defp log_error(maybe, _) do
+    maybe
+  end
+
+  defp response(nil, conn) do
+    conn
+    |> Conn.put_resp_header("content-type", "text/html")
+    |> Conn.resp(500, "Internal server error")
+  end
+
+  defp response(content, conn) do
     conn
     |> Conn.put_resp_header("content-type", "text/html")
     |> Conn.resp(conn.status || 200, content)
