@@ -40,7 +40,8 @@ defmodule Argo.MixProject do
       {:excoveralls, "~> 0.11", only: :test},
       {:phoenix_html, "~> 2.13"},
       {:gettext, "~> 0.17"},
-      {:plug, "~> 1.8"}
+      {:plug, "~> 1.8"},
+      {:ex_maybe, "~> 1.1"}
     ]
   end
 
