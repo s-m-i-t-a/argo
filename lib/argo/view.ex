@@ -24,7 +24,8 @@ defmodule Argo.View do
     end
   end
 
-  def render(%Conn{private: %{pages_render: {template, assigns}}} = conn, view_module) do
+  def render(%Conn{private: %{pages_render: {template, assigns}}} = conn, view_module)
+      when is_binary(template) and is_list(assigns) and is_atom(view_module) do
     content = apply(view_module, :render_template, [template, Keyword.put(assigns, :conn, conn)])
 
     conn
@@ -33,12 +34,14 @@ defmodule Argo.View do
   end
 
   defp load_templates(path) do
-    path
-    |> File.ls!()
-    |> Enum.map(fn file -> {Path.rootname(file), Path.extname(file)} end)
-    |> Enum.filter(fn {_, ext} -> ext == ".eex" end)
-    |> Enum.reduce(%{}, fn {k, ext}, acc ->
-      Map.put(acc, k, path |> Path.join(k <> ext) |> File.read!())
+    basename = Path.expand(path)
+
+    basename
+    |> Path.join("**/*.eex")
+    |> Path.wildcard()
+    |> Enum.map(fn file -> {file |> Path.relative_to(basename) |> Path.rootname(), file} end)
+    |> Enum.reduce(%{}, fn {key, file}, acc ->
+      Map.put(acc, key, File.read!(file))
     end)
   end
 end
