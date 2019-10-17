@@ -18,7 +18,9 @@ defmodule ViewTest do
   end
 
   test "should return nil if template not found" do
-    assert is_nil(TestView.render_template("non_exists.html", []))
+    assert_raise Argo.Template.UndefinedError, fn ->
+      TestView.render_template("non_exists.html", [])
+    end
   end
 
   test "should return 500 status code if template not found" do

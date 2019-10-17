@@ -6,6 +6,8 @@ defmodule Argo.View do
   alias ExMaybe, as: Maybe
   alias Plug.Conn
 
+  alias Argo.Template
+
   require Logger
 
   defmacro __using__(opts) do
@@ -25,12 +27,13 @@ defmodule Argo.View do
       @doc """
       Callback invoked when no template is found.
       """
-      @spec template_not_found(ExMaybe.t(value), binary(), list()) :: value when value: var
-      def template_not_found(nil, template, assigns) do
+      @spec template_not_found(ExMaybe.t(String.t()), binary(), list()) :: String.t()
+      def template_not_found(nil, template, assigns)
+          when is_binary(template) and is_list(assigns) do
         Template.raise_template_not_found(__MODULE__, template, assigns)
       end
 
-      def template_not_found(value, _template, _assigns) do
+      def template_not_found(value, _template, _assigns) when is_binary(value) do
         value
       end
 
@@ -51,8 +54,15 @@ defmodule Argo.View do
 
   def render(%Conn{private: %{pages_render: {template, assigns}}} = conn, view_module)
       when is_binary(template) and is_list(assigns) and is_atom(view_module) do
-    view_module
-    |> apply(:render_template, [template, Keyword.put(assigns, :conn, conn)])
+    content =
+      try do
+        apply(view_module, :render_template, [template, Keyword.put(assigns, :conn, conn)])
+      rescue
+        Template.UndefinedError ->
+          nil
+      end
+
+    content
     |> log_error(template)
     |> response(conn)
   end
