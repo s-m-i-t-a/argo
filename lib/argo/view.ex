@@ -27,7 +27,7 @@ defmodule Argo.View do
       @doc """
       Callback invoked when no template is found.
       """
-      @spec template_not_found(ExMaybe.t(String.t()), binary(), list()) :: String.t()
+      @spec template_not_found(ExMaybe.t(String.t()), String.t(), list()) :: String.t()
       def template_not_found(nil, template, assigns)
           when is_binary(template) and is_list(assigns) do
         Template.raise_template_not_found(__MODULE__, template, assigns)
