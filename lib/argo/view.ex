@@ -58,31 +58,21 @@ defmodule Argo.View do
       try do
         apply(view_module, :render_template, [template, Keyword.put(assigns, :conn, conn)])
       rescue
-        Template.UndefinedError ->
+        e in Template.UndefinedError ->
+          Logger.error(fn -> Template.UndefinedError.message(e) end)
           nil
       end
 
-    content
-    |> log_error(template)
-    |> response(conn)
+    response(conn, content)
   end
 
-  defp log_error(nil, template) do
-    Logger.error(fn -> "Template '#{template}' not found" end)
-    nil
-  end
-
-  defp log_error(maybe, _) do
-    maybe
-  end
-
-  defp response(nil, conn) do
+  defp response(conn, nil) do
     conn
     |> Conn.put_resp_header("content-type", "text/html")
     |> Conn.resp(500, "Internal server error")
   end
 
-  defp response(content, conn) do
+  defp response(conn, content) do
     conn
     |> Conn.put_resp_header("content-type", "text/html")
     |> Conn.resp(conn.status || 200, content)
