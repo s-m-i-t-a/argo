@@ -7,6 +7,8 @@ defmodule ViewTest do
   alias Plug.Conn
   alias Argo.View
 
+  import ExUnit.CaptureLog
+
   defmodule TestView do
     use Argo.View, template_root: "test/templates"
   end
@@ -43,5 +45,18 @@ defmodule ViewTest do
 
     assert rv.status == 200
     assert rv.resp_body =~ ~r/<h1>Two<\/h1>/
+  end
+
+  test "should log error from right template" do
+    assert capture_log(fn ->
+             rv =
+               :get
+               |> conn("/")
+               |> Conn.put_private(:pages_render, {"nested.html", []})
+               |> View.render(TestView)
+
+             assert rv.status == 500
+             assert rv.resp_body =~ ~r/Internal server error/
+           end) =~ ~r/non_exists.html/
   end
 end
