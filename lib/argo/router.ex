@@ -10,6 +10,11 @@ defmodule Argo.Router do
       @before_compile unquote(__MODULE__)
 
       alias Argo.Router
+
+      use Plug.Router
+
+      plug(:match)
+      plug(:dispatch)
     end
   end
 
@@ -59,20 +64,13 @@ defmodule Argo.Router do
         defroute(method, path, module, function)
       end
 
-    IO.inspect(routes_ast)
-
     final_ast =
       quote do
-        use Plug.Router
-
-        plug(:match)
-        plug(:dispatch)
-
         unquote(routes_ast)
 
-        #   match _ do
-        #     Argo.Router.process_error(var!(conn), __MODULE__)
-        #   end
+        match _ do
+          Argo.Router.process_error(var!(conn), __MODULE__)
+        end
       end
 
     IO.puts(Macro.to_string(final_ast))
