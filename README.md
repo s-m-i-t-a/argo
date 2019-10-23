@@ -8,7 +8,7 @@
 ```elixir
 def deps do
   [
-    {:argo, "~> 1.0.0"}
+    {:argo, "~> 1.0.1"}
   ]
 end
 ```
