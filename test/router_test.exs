@@ -40,4 +40,16 @@ defmodule RouterTest do
     assert rv.status == 404
     assert rv.resp_body =~ ~r/ERROR/
   end
+
+  test "should find selected page and render it" do
+    defaults = TestRouter.init([])
+
+    rv =
+      :get
+      |> conn("/")
+      |> TestRouter.call(defaults)
+
+    assert rv.status == 200
+    assert rv.resp_body =~ ~r/<h1>One<\/h1>/
+  end
 end
