@@ -73,7 +73,6 @@ defmodule Argo.Router do
         end
       end
 
-    IO.puts(Macro.to_string(final_ast))
     final_ast
   end
 
