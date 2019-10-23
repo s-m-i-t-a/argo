@@ -12,9 +12,6 @@ defmodule Argo.Router do
       alias Argo.Router
 
       use Plug.Router
-
-      plug(:match)
-      plug(:dispatch)
     end
   end
 
@@ -66,6 +63,8 @@ defmodule Argo.Router do
 
     final_ast =
       quote do
+        plug(:match)
+        plug(:dispatch)
         unquote(routes_ast)
 
         match _ do
