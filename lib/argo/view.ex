@@ -52,7 +52,7 @@ defmodule Argo.View do
     end
   end
 
-  def render(%Conn{private: %{pages_render: {template, assigns}}} = conn, view_module)
+  def render(%Conn{private: %{argo_render_template: {template, assigns}}} = conn, view_module)
       when is_binary(template) and is_list(assigns) and is_atom(view_module) do
     content =
       try do

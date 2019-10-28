@@ -29,7 +29,7 @@ defmodule ViewTest do
     rv =
       :get
       |> conn("/")
-      |> Conn.put_private(:pages_render, {"non_exists.html", []})
+      |> Conn.put_private(:argo_render_template, {"non_exists.html", []})
       |> View.render(TestView)
 
     assert rv.status == 500
@@ -40,7 +40,7 @@ defmodule ViewTest do
     rv =
       :get
       |> conn("/")
-      |> Conn.put_private(:pages_render, {"two/main.html", []})
+      |> Conn.put_private(:argo_render_template, {"two/main.html", []})
       |> View.render(TestView)
 
     assert rv.status == 200
@@ -52,7 +52,7 @@ defmodule ViewTest do
              rv =
                :get
                |> conn("/")
-               |> Conn.put_private(:pages_render, {"nested.html", []})
+               |> Conn.put_private(:argo_render_template, {"nested.html", []})
                |> View.render(TestView)
 
              assert rv.status == 500

@@ -18,7 +18,7 @@ defmodule Argo.Controller do
 
   def render(%Conn{} = conn, template, assigns \\ [])
       when is_binary(template) and is_list(assigns) do
-    Conn.put_private(conn, :pages_render, {template, assigns})
+    Conn.put_private(conn, :argo_render_template, {template, assigns})
   end
 
   @spec redirect(Conn.t(), list()) :: Conn.t()
