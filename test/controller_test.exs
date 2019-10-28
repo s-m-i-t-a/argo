@@ -76,7 +76,7 @@ defmodule ControllerTest do
 
   describe "Render" do
     test "should set private value in conn with template and assigns" do
-      %Conn{private: %{pages_render: {template, assigns}}} =
+      %Conn{private: %{argo_render_template: {template, assigns}}} =
         :get
         |> conn("/")
         |> Controller.render("test.html", foo: :bar)
